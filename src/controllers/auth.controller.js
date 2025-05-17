@@ -33,7 +33,8 @@ const generateAccessAndRefreshToken = async (userId, userModel) => {
 
 // Register-Controllers
 export const registerAdmin = asyncHandler(async (req, res) => {
-
+try{
+    
     const { instituteName, email, password } = req.body;
     const logoLocalPath = req.file?.path;
     // Check if any of the required fields are empty
@@ -100,6 +101,10 @@ export const registerAdmin = asyncHandler(async (req, res) => {
     return res.status(200).json(
         new ApiResponse(200, registeredAdmin, 'Admin registered successfully')
     );
+}
+    catch(error){
+        console.log(error)
+    }
 });
 
 export const registerTeacher = asyncHandler(async (req, res) => {
