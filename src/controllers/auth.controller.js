@@ -487,11 +487,11 @@ export const loginTeacher = asyncHandler(async (req, res) => {
     delete loggedInUser.refreshToken;
 
     const options = {
-        httpOnly: true,         // Prevents access via JavaScript (XSS protection)
-        secure: true,           // Ensures cookie is sent only over HTTPS
-        sameSite: 'Strict',     // Prevents CSRF by only sending cookie from same site
-        path: '/',
-    };
+  httpOnly: true,
+  secure: true,       // Required for 'None' to work
+  sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
+  path: '/',
+};
 
     return res
         .status(200)
@@ -552,12 +552,12 @@ export const loginStudent = asyncHandler(async (req, res) => {
     delete loggedInUser.password;
     delete loggedInUser.refreshToken;
 
-    const options = {
-        httpOnly: true,         // Prevents access via JavaScript (XSS protection)
-        secure: true,           // Ensures cookie is sent only over HTTPS
-        sameSite: 'Strict',     // Prevents CSRF by only sending cookie from same site
-        path: '/',
-    };
+     const options = {
+  httpOnly: true,
+  secure: true,       // Required for 'None' to work
+  sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
+  path: '/',
+};
 
     return res
         .status(200)
@@ -607,13 +607,12 @@ export const loginParent = asyncHandler(async (req, res) => {
     delete loggedInParent.password;
     delete loggedInParent.refreshToken;
 
-    const options = {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'Strict',
-        path: '/',
-    };
-
+     const options = {
+  httpOnly: true,
+  secure: true,       // Required for 'None' to work
+  sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
+  path: '/',
+};
     return res
         .status(200)
         .cookie('accessToken', accessToken, options)
