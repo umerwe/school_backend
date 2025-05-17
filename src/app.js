@@ -14,9 +14,7 @@ const whitelist = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-
     if (whitelist.includes(origin)) {
       callback(null, true);
     } else {
@@ -24,9 +22,9 @@ const corsOptions = {
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
 };
+
+app.use(cors(corsOptions));
 
 app.use(cookieParser());
 
