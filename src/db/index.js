@@ -2,10 +2,12 @@ import mongoose from 'mongoose';
 
 export const connectDB = async () => {
     try {
-        await mongoose.connect('mongodb://127.0.0.1:27017/school');
-        console.log('✅ MongoDB Connected Successfully');
+        if (mongoose.connection.readyState === 0) { // Only connect if not already connected
+            await mongoose.connect(`${process.env.MONGODB_URL}/${process.env.DB_NAME}`);
+            console.log('✅ MongoDB Connected Successfully');
+        }
     } catch (error) {
         console.error(`❌ Database Connection Error: ${error.message}`);
-        process.exit(1); // Exit the app if DB connection fails
+        throw error; // Re-throw to handle in the calling function
     }
 };
