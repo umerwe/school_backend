@@ -1,14 +1,7 @@
-import multer from "multer"
+// multerConfig.js
+import multer from "multer";
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './public/temp')
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname)
-    }
-})
+// Store file in memory buffer instead of file system
+const storage = multer.memoryStorage();
 
-export const upload = multer({
-    storage: storage
-})
+export const upload = multer({ storage });
