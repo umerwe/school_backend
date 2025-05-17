@@ -102,9 +102,14 @@ try{
         new ApiResponse(200, registeredAdmin, 'Admin registered successfully')
     );
 }
-    catch(error){
-        console.log(error)
-    }
+ catch (error) {
+  console.error("Register Admin Error:", error);  // Better for Vercel logs
+  return res.status(error.statusCode || 500).json({
+    success: false,
+    message: error.message || "Internal Server Error",
+  });
+}
+
 });
 
 export const registerTeacher = asyncHandler(async (req, res) => {
