@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "My backend API",
   "main": "index.js",
   "type": "module",
   "scripts": {
