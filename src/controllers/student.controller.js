@@ -388,120 +388,125 @@ export const resetStudentNumber = asyncHandler(async (req, res) => {
 });
 
 const studentDashboardController = {
-  getDashboardSummary: asyncHandler(async (req, res) => {
-    const studentId = req.user._id;
-    const instituteId = req.user.instituteId;
-    const summary = {
-      classDetails: null,
-      subjects: null,
-      attendance: null,
-      marks: null,
-      announcements: null,
-      vouchers: null,
-    };
+    getDashboardSummary: asyncHandler(async (req, res) => {
+        const studentId = req.user._id;
+        const instituteId = req.user.instituteId;
+        const summary = {
+            classDetails: null,
+            subjects: null,
+            attendance: null,
+            marks: null,
+            announcements: null,
+            vouchers: null,
+            studentCount
+        };
 
-    // Fetch student's class details
-    const classData = await Class.findOne({
-      classTitle: req.user.studentClass,
-      section: req.user.section.trim().toUpperCase(),
-      instituteId,
-    })
-      .populate('classTeacher', 'name teacherId -_id')
-      .populate({
-        path: 'subjects',
-        select: 'subjectName subjectTeacher -_id',
-        populate: {
-          path: 'subjectTeacher',
-          select: 'name teacherId -_id',
-        },
-      });
-    summary.classDetails = classData || null;
+        // Fetch student's class details
+        const classData = await Class.findOne({
+            classTitle: req.user.studentClass,
+            section: req.user.section.trim().toUpperCase(),
+            instituteId,
+        })
+            .populate('classTeacher', 'name teacherId -_id')
+            .populate({
+                path: 'subjects',
+                select: 'subjectName subjectTeacher -_id',
+                populate: {
+                    path: 'subjectTeacher',
+                    select: 'name teacherId -_id',
+                },
+            });
+        summary.classDetails = classData || null;
 
-    // Fetch subjects for the student
-    if (classData) {
-      summary.subjects = classData.subjects.map(subject => ({
-        subjectName: subject.subjectName,
-        subjectTeacher: subject.subjectTeacher,
-      }));
-    } else {
-      summary.subjects = [];
-    }
+        // Fetch subjects for the student
+        if (classData) {
+            summary.subjects = classData.subjects.map(subject => ({
+                subjectName: subject.subjectName,
+                subjectTeacher: subject.subjectTeacher,
+            }));
+        } else {
+            summary.subjects = [];
+        }
 
-    // Fetch student's attendance
-    const attendanceRecords = await Attendance.find(
-      {
-        "students.studentId": studentId,
-        instituteId,
-      },
-      {
-        classId: 1,
-        teacherId: 1,
-        date: 1,
-        instituteId: 1,
-        students: { $elemMatch: { studentId } },
-        createdAt: 1,
-        updatedAt: 1,
-      }
-    ).sort({ date: -1 });
-    summary.attendance = attendanceRecords.map(record => ({
-      _id: record._id,
-      date: record.date,
-      status: record.students[0]?.status,
-      createdAt: record.createdAt,
-      updatedAt: record.updatedAt,
-    }));
+        // Fetch student's attendance
+        const attendanceRecords = await Attendance.find(
+            {
+                "students.studentId": studentId,
+                instituteId,
+            },
+            {
+                classId: 1,
+                teacherId: 1,
+                date: 1,
+                instituteId: 1,
+                students: { $elemMatch: { studentId } },
+                createdAt: 1,
+                updatedAt: 1,
+            }
+        ).sort({ date: -1 });
+        summary.attendance = attendanceRecords.map(record => ({
+            _id: record._id,
+            date: record.date,
+            status: record.students[0]?.status,
+            createdAt: record.createdAt,
+            updatedAt: record.updatedAt,
+        }));
 
-    // Fetch student's marks
-    const studentMarks = await Marks.find({ student: studentId, instituteId })
-      .populate('student', 'name rollNumber -_id')
-      .populate('subjectTeacher', 'name teacherId -_id')
-      .populate('classTeacher', 'name teacherId -_id')
-      .sort({ subject: 1 });
-    summary.marks = studentMarks.map(marks => ({
-      _id: marks._id,
-      student: marks.student,
-      subject: marks.subject,
-      subjectTeacher: marks.subjectTeacher,
-      classTeacher: marks.classTeacher,
-      classTitle: marks.classTitle,
-      section: marks.section,
-      assessmentType: marks.assessmentType,
-      totalMarks: marks.totalMarks,
-      obtainedMarks: marks.obtainedMarks,
-      grade: marks.grade,
-      createdAt: marks.createdAt,
-      updatedAt: marks.updatedAt,
-    }));
+        // Fetch student's marks
+        const studentMarks = await Marks.find({ student: studentId, instituteId })
+            .populate('student', 'name rollNumber -_id')
+            .populate('subjectTeacher', 'name teacherId -_id')
+            .populate('classTeacher', 'name teacherId -_id')
+            .sort({ subject: 1 });
+        summary.marks = studentMarks.map(marks => ({
+            _id: marks._id,
+            student: marks.student,
+            subject: marks.subject,
+            subjectTeacher: marks.subjectTeacher,
+            classTeacher: marks.classTeacher,
+            classTitle: marks.classTitle,
+            section: marks.section,
+            assessmentType: marks.assessmentType,
+            totalMarks: marks.totalMarks,
+            obtainedMarks: marks.obtainedMarks,
+            grade: marks.grade,
+            createdAt: marks.createdAt,
+            updatedAt: marks.updatedAt,
+        }));
 
-    // Fetch announcements for the student's role
-    const announcements = await Announcement.find({
-      instituteId,
-      $or: [
-        { audience: 'students' },
-        { audience: 'all' },
-        { audience: { $regex: 'students', $options: 'i' } },
-      ],
-    })
-      .sort({ createdAt: -1 })
-      .select('title message createdAt audience');
-    summary.announcements = announcements;
+        // Fetch announcements for the student's role
+        const announcements = await Announcement.find({
+            instituteId,
+            $or: [
+                { audience: 'students' },
+                { audience: 'all' },
+                { audience: { $regex: 'students', $options: 'i' } },
+            ],
+        })
+            .sort({ createdAt: -1 })
+            .select('title message createdAt audience');
+        summary.announcements = announcements;
 
-    // Fetch student's vouchers
-    const vouchers = await Voucher.find({ student: studentId, instituteId });
-    summary.vouchers = vouchers.map(voucher => ({
-      _id: voucher._id,
-      voucherId : voucher.voucherId,
-      amount: voucher.amount,
-      dueDate: voucher.dueDate,
-      status: voucher.status,
-      createdAt: voucher.createdAt,
-      updatedAt: voucher.updatedAt,
-    }));
+        // Fetch teacher’s contact number
+        const student = await Student.findOne({ _id: studentId, instituteId });
+        summary.studentCount = student ? { number: student.number } : null;
 
-    return res.status(200).json(
-      new ApiResponse(200, summary, 'Student dashboard summary fetched successfully')
-    );
-  }),
+        // Fetch student's vouchers
+        const vouchers = await Voucher.find({ student: studentId, instituteId });
+        summary.vouchers = vouchers.map(voucher => ({
+            _id: voucher._id,
+            voucherId: voucher.voucherId,
+            amount: voucher.amount,
+            dueDate: voucher.dueDate,
+            status: voucher.status,
+            createdAt: voucher.createdAt,
+            updatedAt: voucher.updatedAt,
+        }));
+
+        return res.status(200).json(
+            new ApiResponse(200, summary, 'Student dashboard summary fetched successfully')
+        );
+    }),
 };
 
 export default studentDashboardController;

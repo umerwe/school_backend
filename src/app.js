@@ -6,20 +6,27 @@ import { ApiError } from './utils/ApiError.js'; // Adjust the path to where your
 const app = express();
 
 // Middlewares 
-const allowedOrigins = process.env.CORS_ORIGIN.split(",");
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
+const whitelist = [
+  process.env.CORS_ORIGIN_LOCAL,
+  process.env.CORS_ORIGIN_PROD
+].filter(Boolean); // Remove any undefined values
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
+
+    if (whitelist.includes(origin)) {
+      callback(null, true);
     } else {
-      return callback(new Error("Not allowed by CORS"));
+      callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
-}));
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
 
 app.use(cookieParser());
 
@@ -66,19 +73,19 @@ app.use('/api/v1/reports', reportsRoute);
 
 // Error-handling middleware (ADD HERE, AFTER ALL ROUTES AND MIDDLEWARE)
 app.use((err, req, res, next) => {
-    if (err instanceof ApiError) {
-        return res.status(err.statusCode).json({
-            success: false, // Align with ApiError's success property
-            message: err.message, // e.g., "SchoolOrCollegeName already taken"
-            errors: err.errors // Include additional errors if any
-        });
-    }
-
-    return res.status(500).json({
-        success: false,
-        message: 'An unexpected error occurred',
-        errors: []
+  if (err instanceof ApiError) {
+    return res.status(err.statusCode).json({
+      success: false, // Align with ApiError's success property
+      message: err.message, // e.g., "SchoolOrCollegeName already taken"
+      errors: err.errors // Include additional errors if any
     });
+  }
+
+  return res.status(500).json({
+    success: false,
+    message: 'An unexpected error occurred',
+    errors: []
+  });
 });
 
 export { app };
