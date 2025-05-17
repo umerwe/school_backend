@@ -36,7 +36,7 @@ export const registerAdmin = asyncHandler(async (req, res) => {
 try{
     
     const { instituteName, email, password } = req.body;
-    const logoLocalPath = req.file?.path;
+    const logoLocalPath = req.file?.path || req.file.buffer;
     // Check if any of the required fields are empty
     if ([instituteName, email, password].some(field => field?.trim() === "")) {
         throw new ApiError(400, 'All fields are required');
