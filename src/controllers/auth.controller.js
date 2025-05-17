@@ -420,11 +420,12 @@ export const loginAdmin = asyncHandler(async (req, res) => {
     delete loggedInUser.refreshToken;
 
     const options = {
-        httpOnly: true,         // Prevents access via JavaScript (XSS protection)
-        secure: true,           // Ensures cookie is sent only over HTTPS
-        sameSite: 'Strict',     // Prevents CSRF by only sending cookie from same site
-        path: '/',
-    };
+  httpOnly: true,
+  secure: true,       // Required for 'None' to work
+  sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
+  path: '/',
+};
+
 
     return res
         .status(200)
