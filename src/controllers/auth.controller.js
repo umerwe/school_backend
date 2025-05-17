@@ -42,9 +42,9 @@ try{
         throw new ApiError(400, 'All fields are required');
     }
 
-    // if (!logoLocalPath) {
-    //     throw new ApiError(400, "Please upload a logo");
-    // }
+    if (!logoLocalPath) {
+        throw new ApiError(400, "Please upload a logo");
+    }
     // Check if the email is valid
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     if (!emailRegex.test(email)) {
@@ -70,20 +70,20 @@ try{
         }
     }
 
-    // // Upload the image to Cloudinary
-    // const logo = await uploadOnCloudinary(logoLocalPath);
+    // Upload the image to Cloudinary
+    const logo = await uploadOnCloudinary(logoLocalPath);
 
-    // // If upload fails, return a suitable error
-    // if (!logo) {
-    //     throw new ApiError(500, "Failed to upload logo to Cloudinary");
-    // }
+    // If upload fails, return a suitable error
+    if (!logo) {
+        throw new ApiError(500, "Failed to upload logo to Cloudinary");
+    }
 
     // Create a new admin user
     const admin = await Admin.create({
         instituteName,
         email,
         password,
-        // logo: logo.url, // Save the Cloudinary URL
+        logo: logo.url, // Save the Cloudinary URL
         role: 'admin',
     });
 
