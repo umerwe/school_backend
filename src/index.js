@@ -5,7 +5,7 @@ import 'dotenv/config'
 connectDB()
     .then(() => {
         app.listen(process.env.PORT, () => {
-            console.log(`Server running on PORT: ${process.env.PORT}`)
+            console.log(`Server running on the PORT: ${process.env.PORT}`)
         })
     })
     .catch((error) => {
