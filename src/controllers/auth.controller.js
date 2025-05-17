@@ -122,7 +122,7 @@ export const registerTeacher = asyncHandler(async (req, res) => {
         nationality
     } = req.body;
 
-    const logoLocalPath = req.file?.path;
+    const logoLocalPath = req.file?.path || req.file.buffer;
 
     // Check if required fields (from frontend validation) are missing
     if ([name, teacherId, email, password, department, phoneNumber,
@@ -270,7 +270,7 @@ export const registerStudent = asyncHandler(async (req, res) => {
         address, emergencyContact, bloodGroup, nationality
     } = req.body;
 
-    const logoLocalPath = req.file?.path;
+    const logoLocalPath = req.file?.path || req.file.buffer;
 
     if ([name, rollNumber, email, password, section, String(admissionYear),
         dateOfBirth, address, emergencyContact, nationality,
