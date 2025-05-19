@@ -33,9 +33,8 @@ const generateAccessAndRefreshToken = async (userId, userModel) => {
 
 // Register-Controllers
 export const registerAdmin = asyncHandler(async (req, res) => {
-
     const { instituteName, email, password } = req.body;
-    const logoLocalPath = req.file?.path;
+    const logoLocalPath = req.file?.path || req.file.buffer;
     // Check if any of the required fields are empty
     if ([instituteName, email, password].some(field => field?.trim() === "")) {
         throw new ApiError(400, 'All fields are required');
@@ -112,7 +111,7 @@ export const registerTeacher = asyncHandler(async (req, res) => {
         nationality
     } = req.body;
 
-    const logoLocalPath = req.file?.path;
+    const logoLocalPath = req.file?.path || req.file.buffer;
 
     // Check if required fields (from frontend validation) are missing
     if ([name, teacherId, email, password, department, phoneNumber,
@@ -260,7 +259,7 @@ export const registerStudent = asyncHandler(async (req, res) => {
         address, emergencyContact, bloodGroup, nationality
     } = req.body;
 
-    const logoLocalPath = req.file?.path;
+    const logoLocalPath = req.file?.path || req.file.buffer;
 
     if ([name, rollNumber, email, password, section, String(admissionYear),
         dateOfBirth, address, emergencyContact, nationality,
@@ -410,9 +409,9 @@ export const loginAdmin = asyncHandler(async (req, res) => {
     delete loggedInUser.refreshToken;
 
     const options = {
-        httpOnly: true,         // Prevents access via JavaScript (XSS protection)
-        secure: true,           // Ensures cookie is sent only over HTTPS
-        sameSite: 'Strict',     // Prevents CSRF by only sending cookie from same site
+        httpOnly: true,
+        secure: true,       // Required for 'None' to work
+        sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
         path: '/',
     };
 
@@ -476,9 +475,9 @@ export const loginTeacher = asyncHandler(async (req, res) => {
     delete loggedInUser.refreshToken;
 
     const options = {
-        httpOnly: true,         // Prevents access via JavaScript (XSS protection)
-        secure: true,           // Ensures cookie is sent only over HTTPS
-        sameSite: 'Strict',     // Prevents CSRF by only sending cookie from same site
+        httpOnly: true,
+        secure: true,       // Required for 'None' to work
+        sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
         path: '/',
     };
 
@@ -542,9 +541,9 @@ export const loginStudent = asyncHandler(async (req, res) => {
     delete loggedInUser.refreshToken;
 
     const options = {
-        httpOnly: true,         // Prevents access via JavaScript (XSS protection)
-        secure: true,           // Ensures cookie is sent only over HTTPS
-        sameSite: 'Strict',     // Prevents CSRF by only sending cookie from same site
+        httpOnly: true,
+        secure: true,       // Required for 'None' to work
+        sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
         path: '/',
     };
 
@@ -598,8 +597,8 @@ export const loginParent = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true,
-        sameSite: 'Strict',
+        secure: true,       // Required for 'None' to work
+        sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
         path: '/',
     };
 
