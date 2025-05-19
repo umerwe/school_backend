@@ -40,6 +40,7 @@ const studentSchema = new Schema({
     refreshToken: {
         type: String,
     },
+    // Class Information
     studentClass: {
         type: Number,
         required: true

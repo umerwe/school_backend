@@ -33,6 +33,11 @@ const generateAccessAndRefreshToken = async (userId, userModel) => {
 
 // Register-Controllers
 export const registerAdmin = asyncHandler(async (req, res) => {
+<<<<<<< HEAD
+=======
+try{
+    
+>>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb
     const { instituteName, email, password } = req.body;
     const logoLocalPath = req.file?.path || req.file.buffer;
     // Check if any of the required fields are empty
@@ -99,6 +104,18 @@ export const registerAdmin = asyncHandler(async (req, res) => {
     return res.status(200).json(
         new ApiResponse(200, registeredAdmin, 'Admin registered successfully')
     );
+<<<<<<< HEAD
+=======
+}
+ catch (error) {
+  console.error("Register Admin Error:", error);  // Better for Vercel logs
+  return res.status(error.statusCode || 500).json({
+    success: false,
+    message: error.message || "Internal Server Error",
+  });
+}
+
+>>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb
 });
 
 export const registerTeacher = asyncHandler(async (req, res) => {
@@ -409,11 +426,20 @@ export const loginAdmin = asyncHandler(async (req, res) => {
     delete loggedInUser.refreshToken;
 
     const options = {
+<<<<<<< HEAD
         httpOnly: true,
         secure: true,       // Required for 'None' to work
         sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
         path: '/',
     };
+=======
+  httpOnly: true,
+  secure: true,       // Required for 'None' to work
+  sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
+  path: '/',
+};
+
+>>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb
 
     return res
         .status(200)
@@ -475,11 +501,19 @@ export const loginTeacher = asyncHandler(async (req, res) => {
     delete loggedInUser.refreshToken;
 
     const options = {
+<<<<<<< HEAD
         httpOnly: true,
         secure: true,       // Required for 'None' to work
         sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
         path: '/',
     };
+=======
+  httpOnly: true,
+  secure: true,       // Required for 'None' to work
+  sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
+  path: '/',
+};
+>>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb
 
     return res
         .status(200)
@@ -540,12 +574,21 @@ export const loginStudent = asyncHandler(async (req, res) => {
     delete loggedInUser.password;
     delete loggedInUser.refreshToken;
 
+<<<<<<< HEAD
     const options = {
         httpOnly: true,
         secure: true,       // Required for 'None' to work
         sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
         path: '/',
     };
+=======
+     const options = {
+  httpOnly: true,
+  secure: true,       // Required for 'None' to work
+  sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
+  path: '/',
+};
+>>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb
 
     return res
         .status(200)
@@ -595,6 +638,7 @@ export const loginParent = asyncHandler(async (req, res) => {
     delete loggedInParent.password;
     delete loggedInParent.refreshToken;
 
+<<<<<<< HEAD
     const options = {
         httpOnly: true,
         secure: true,       // Required for 'None' to work
@@ -602,6 +646,14 @@ export const loginParent = asyncHandler(async (req, res) => {
         path: '/',
     };
 
+=======
+     const options = {
+  httpOnly: true,
+  secure: true,       // Required for 'None' to work
+  sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
+  path: '/',
+};
+>>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb
     return res
         .status(200)
         .cookie('accessToken', accessToken, options)
@@ -860,4 +912,8 @@ export const changePassword = asyncHandler(async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     return res.status(200).json({ message: 'Password changed successfully' });
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb

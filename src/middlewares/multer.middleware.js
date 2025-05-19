@@ -1,6 +1,7 @@
 // multerConfig.js
 import multer from "multer";
 
+<<<<<<< HEAD
 let storage;
 
 if (process.env.CORS_ORIGIN_LOCAL) {
@@ -20,5 +21,9 @@ if (process.env.CORS_ORIGIN_LOCAL) {
   // Default fallback (optional)
   throw new Error("Neither CORS_ORIGIN_LOCAL nor CORS_ORIGIN_PROD is defined");
 }
+=======
+// Store file in memory buffer instead of file system
+const storage = multer.memoryStorage();
+>>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb
 
 export const upload = multer({ storage });
