@@ -33,90 +33,83 @@ const generateAccessAndRefreshToken = async (userId, userModel) => {
 
 // Register-Controllers
 export const registerAdmin = asyncHandler(async (req, res) => {
-<<<<<<< HEAD
-=======
-try{
-    
->>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb
-    const { instituteName, email, password } = req.body;
-    const logoLocalPath = req.file?.path || req.file.buffer;
-    // Check if any of the required fields are empty
-    if ([instituteName, email, password].some(field => field?.trim() === "")) {
-        throw new ApiError(400, 'All fields are required');
-    }
+    try {
+        const { instituteName, email, password } = req.body;
+        const logoLocalPath = req.file?.path || req.file?.buffer;
 
-    if (!logoLocalPath) {
-        throw new ApiError(400, "Please upload a logo");
-    }
-    // Check if the email is valid
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    if (!emailRegex.test(email)) {
-        throw new ApiError(400, 'Invalid email format');
-    }
-
-    // Check if the password is at least 8 characters long and has a mix of characters
-    if (password.length < 8 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/.test(password)) {
-        throw new ApiError(400, 'Password must be at least 8 characters long and contain a mix of letters, numbers, and special characters');
-    }
-
-    // Check if the user already exists (by SchoolOrCollegeName or email)
-    const existedAdmin = await Admin.findOne({
-        $or: [{ instituteName }, { email }]
-    });
-
-
-    if (existedAdmin) {
-        if (existedAdmin.email === email) {
-            throw new ApiError(400, 'Email already registered');
-        } else {
-            throw new ApiError(400, 'Institute Name already taken');
+        // Validate required fields
+        if ([instituteName, email, password].some(field => field?.trim() === "")) {
+            throw new ApiError(400, 'All fields are required');
         }
+
+        if (!logoLocalPath) {
+            throw new ApiError(400, "Please upload a logo");
+        }
+
+        // Validate email
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        if (!emailRegex.test(email)) {
+            throw new ApiError(400, 'Invalid email format');
+        }
+
+        // Validate password
+        if (
+            password.length < 8 ||
+            !/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/.test(password)
+        ) {
+            throw new ApiError(400, 'Password must be at least 8 characters long and contain a mix of letters, numbers, and special characters');
+        }
+
+        // Check if admin already exists
+        const existedAdmin = await Admin.findOne({
+            $or: [{ instituteName }, { email }]
+        });
+
+        if (existedAdmin) {
+            if (existedAdmin.email === email) {
+                throw new ApiError(400, 'Email already registered');
+            } else {
+                throw new ApiError(400, 'Institute Name already taken');
+            }
+        }
+
+        // Upload logo to Cloudinary
+        const logo = await uploadOnCloudinary(logoLocalPath);
+
+        if (!logo) {
+            throw new ApiError(500, "Failed to upload logo to Cloudinary");
+        }
+
+        // Create new admin
+        const admin = await Admin.create({
+            instituteName,
+            email,
+            password,
+            logo: logo.url,
+            role: 'admin',
+        });
+
+        const registeredAdmin = admin.toObject();
+
+        if (!registeredAdmin) {
+            throw new ApiError(500, 'Something went wrong while registering the Admin');
+        }
+
+        delete registeredAdmin.password;
+        delete registeredAdmin.refreshToken;
+
+        return res.status(200).json(
+            new ApiResponse(200, registeredAdmin, 'Admin registered successfully')
+        );
+    } catch (error) {
+        console.error("Register Admin Error:", error);
+        return res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message || "Internal Server Error",
+        });
     }
-
-    // Upload the image to Cloudinary
-    const logo = await uploadOnCloudinary(logoLocalPath);
-
-    // If upload fails, return a suitable error
-    if (!logo) {
-        throw new ApiError(500, "Failed to upload logo to Cloudinary");
-    }
-
-    // Create a new admin user
-    const admin = await Admin.create({
-        instituteName,
-        email,
-        password,
-        logo: logo.url, // Save the Cloudinary URL
-        role: 'admin',
-    });
-
-    const registeredAdmin = admin.toObject();
-    // If user creation failed, throw an error
-    if (!registeredAdmin) {
-        throw new ApiError(500, 'Something went wrong while registering the Admin');
-    }
-
-    // Remove sensitive data before sending the response
-    delete registeredAdmin.password;
-    delete registeredAdmin.refreshToken;
-
-    // Return successful registration response
-    return res.status(200).json(
-        new ApiResponse(200, registeredAdmin, 'Admin registered successfully')
-    );
-<<<<<<< HEAD
-=======
-}
- catch (error) {
-  console.error("Register Admin Error:", error);  // Better for Vercel logs
-  return res.status(error.statusCode || 500).json({
-    success: false,
-    message: error.message || "Internal Server Error",
-  });
-}
-
->>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb
 });
+
 
 export const registerTeacher = asyncHandler(async (req, res) => {
     const id = req.user._id;
@@ -426,20 +419,11 @@ export const loginAdmin = asyncHandler(async (req, res) => {
     delete loggedInUser.refreshToken;
 
     const options = {
-<<<<<<< HEAD
         httpOnly: true,
         secure: true,       // Required for 'None' to work
         sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
         path: '/',
     };
-=======
-  httpOnly: true,
-  secure: true,       // Required for 'None' to work
-  sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
-  path: '/',
-};
-
->>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb
 
     return res
         .status(200)
@@ -501,19 +485,11 @@ export const loginTeacher = asyncHandler(async (req, res) => {
     delete loggedInUser.refreshToken;
 
     const options = {
-<<<<<<< HEAD
         httpOnly: true,
         secure: true,       // Required for 'None' to work
         sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
         path: '/',
     };
-=======
-  httpOnly: true,
-  secure: true,       // Required for 'None' to work
-  sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
-  path: '/',
-};
->>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb
 
     return res
         .status(200)
@@ -574,21 +550,12 @@ export const loginStudent = asyncHandler(async (req, res) => {
     delete loggedInUser.password;
     delete loggedInUser.refreshToken;
 
-<<<<<<< HEAD
     const options = {
         httpOnly: true,
         secure: true,       // Required for 'None' to work
         sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
         path: '/',
     };
-=======
-     const options = {
-  httpOnly: true,
-  secure: true,       // Required for 'None' to work
-  sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
-  path: '/',
-};
->>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb
 
     return res
         .status(200)
@@ -638,22 +605,12 @@ export const loginParent = asyncHandler(async (req, res) => {
     delete loggedInParent.password;
     delete loggedInParent.refreshToken;
 
-<<<<<<< HEAD
     const options = {
         httpOnly: true,
         secure: true,       // Required for 'None' to work
         sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
         path: '/',
     };
-
-=======
-     const options = {
-  httpOnly: true,
-  secure: true,       // Required for 'None' to work
-  sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
-  path: '/',
-};
->>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb
     return res
         .status(200)
         .cookie('accessToken', accessToken, options)
@@ -912,8 +869,4 @@ export const changePassword = asyncHandler(async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     return res.status(200).json({ message: 'Password changed successfully' });
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> 98951066e687ddfd8cd01357e20478a3bf0c83bb
