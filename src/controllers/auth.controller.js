@@ -746,11 +746,11 @@ export const refreshAuthTokens = asyncHandler(async (req, res) => {
     const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshToken(user._id, Model);
 
     // Set the cookie options
-    const cookieOptions = {
-        httpOnly: true,         // Protects against XSS
-        secure: true,           // Ensures cookie is sent only over HTTPS
-        sameSite: 'Strict',     // Prevents CSRF attacks
-        path: '/',             // Cookie is available for the entire app
+    const options = {
+        httpOnly: true,
+        secure: true,       // Required for 'None' to work
+        sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
+        path: '/',
     };
 
     // Send the new tokens back in the response and set them as cookies
