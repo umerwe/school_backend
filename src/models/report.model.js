@@ -59,7 +59,15 @@ const reportSchema = new Schema(
   { timestamps: true }
 );
 
-// Index for faster queries
-reportSchema.index({ parent: 1, instituteId: 1, createdAt: -1 });
+// Adding individual indexes
+reportSchema.index({ instituteId: 1 }); // Index on instituteId
+reportSchema.index({ student: 1 }); // Index on student
 
+// Retained compound index for parent, instituteId, and createdAt
+reportSchema.index({ parent: 1, instituteId: 1, createdAt: -1 }); // Optimizes queries for parent reports by institute, sorted by recency
+
+// Adding a compound index for student, instituteId, and reportType
+reportSchema.index({ student: 1, instituteId: 1, reportType: 1 }); // Optimizes queries for student reports by institute and type
+
+// Creating the Report model
 export const Report = model('Report', reportSchema);

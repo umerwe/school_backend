@@ -12,14 +12,14 @@ const teacherSchema = new Schema({
     teacherId: {
         type: String,
         required: true,
-        unique: true,
+        unique: true, // Automatically creates a unique index
         lowercase: true,
         trim: true
     },
     email: {
         type: String,
         required: true,
-        unique: true,
+        unique: true, // Automatically creates a unique index
         trim: true
     },
     password: {
@@ -40,7 +40,7 @@ const teacherSchema = new Schema({
     },
     logo: {
         type: String,
-        unique: true,
+        unique: true, // Automatically creates a unique index
         trim: true
     },
     refreshToken: {
@@ -91,9 +91,9 @@ const teacherSchema = new Schema({
     instituteId: {
         type: Schema.Types.ObjectId,
         ref: 'Admin',
+        required: true // Align with previous schemas
     }
 }, { timestamps: true });
-
 
 teacherSchema.pre('save', async function (next) {
     if (this.isModified('password')) {
@@ -132,5 +132,14 @@ teacherSchema.methods.generateRefreshToken = function () {
             expiresIn: process.env.REFRESH_TOKEN_EXPIRY
         })
 }
+
+// Adding individual indexes
+teacherSchema.index({ instituteId: 1 }); // Index on instituteId
+
+teacherSchema.index({ name: 1 }); // Index on name
+
+// Adding a compound index for name and instituteId
+teacherSchema.index({ name: 1, instituteId: 1 }); // Optimizes searches by name within an institute
+
 
 export const Teacher = model('Teacher', teacherSchema)

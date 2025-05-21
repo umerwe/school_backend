@@ -41,12 +41,21 @@ const voucherSchema = new Schema({
     },
     voucherId: {
         type: String,
-        unique: true,
+        unique: true, // Automatically creates a unique index
         required: true
     },
 }, {
     timestamps: true
 });
 
+// Adding individual indexes
+voucherSchema.index({ instituteId: 1 }); // Index on instituteId
+voucherSchema.index({ student: 1 }); // Index on student
+voucherSchema.index({ month: 1 }); // Index on month
+voucherSchema.index({ year: 1 }); // Index on year
 
+// Adding a compound index for student, month, year, and instituteId
+voucherSchema.index({ student: 1, month: 1, year: 1, instituteId: 1 }, { unique: true }); // Ensures unique voucher per student, month, and institute
+
+// Creating the Voucher model
 export const Voucher = model('Voucher', voucherSchema);

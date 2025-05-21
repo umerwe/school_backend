@@ -16,7 +16,6 @@ export const createRoleBasedJWTMiddleware = () => {
             }
 
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-
             let user;
             if (decoded.role === 'admin') {
                 user = await Admin.findById(decoded._id).select('-password -refreshToken');
@@ -51,6 +50,7 @@ export const createRoleBasedJWTMiddleware = () => {
             next();
         } catch (err) {
             res.status(401).json({ message: err.message || "Unauthorized" });
+            console.log(err)
         }
     };
 };

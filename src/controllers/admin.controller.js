@@ -351,17 +351,6 @@ const adminDashboardController = {
       new ApiResponse(200, summary, 'Dashboard summary fetched successfully')
     );
   }),
-
-  // Other controller methods can remain the same as before
-  getAllStudents: asyncHandler(async (req, res) => {
-    // ... existing implementation
-  }),
-
-  getAllTeachers: asyncHandler(async (req, res) => {
-    // ... existing implementation
-  }),
-
-  // ... other methods
 };
 
 export default adminDashboardController;

@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model } from 'mongoose';
 
 const marksSchema = new Schema({
     student: {
@@ -23,11 +23,15 @@ const marksSchema = new Schema({
     },
     classTitle: {
         type: Number,
-        required: true
+        required: true,
+        enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] // Align with classSchema
     },
     section: {
         type: String,
-        required: true
+        required: true,
+        trim: true,
+        uppercase: true,
+        enum: ['A', 'B', 'C', 'D', 'E'] // Align with classSchema
     },
     totalMarks: {
         type: Number,
@@ -57,9 +61,22 @@ const marksSchema = new Schema({
     instituteId: {
         type: Schema.Types.ObjectId,
         ref: 'Admin',
+        required: true // Assuming instituteId is mandatory
     }
 }, {
     timestamps: true
 });
 
+// Adding individual indexes
+marksSchema.index({ classTitle: 1 }); // Index on classTitle
+marksSchema.index({ section: 1 }); // Index on section
+marksSchema.index({ instituteId: 1 }); // Index on instituteId
+
+// Adding a compound index for classTitle, section, instituteId, student, subject, and assessmentType
+marksSchema.index(
+    { classTitle: 1, section: 1, instituteId: 1, student: 1, subject: 1, assessmentType: 1 },
+    { unique: true }
+); // Ensures unique marks entry per student, subject, and assessment type in a class
+
+// Creating the Marks model
 export const Marks = model('Marks', marksSchema);

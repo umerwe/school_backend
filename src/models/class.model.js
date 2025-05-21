@@ -31,9 +31,17 @@ const classSchema = new Schema({
     instituteId: {
         type: Schema.Types.ObjectId,
         ref: 'Admin',
+        required: true, // Assuming instituteId is mandatory
     }
 }, { timestamps: true });
 
+// Adding individual indexes
+classSchema.index({ classTitle: 1 }); // Index on classTitle
+classSchema.index({ section: 1 }); // Index on section
+classSchema.index({ instituteId: 1 }); // Index on instituteId
+
+// Adding a compound index for classTitle, section, and instituteId
+classSchema.index({ classTitle: 1, section: 1, instituteId: 1 }, { unique: true }); // Ensures unique combination
 
 // Creating the Class model
 export const Class = model('Class', classSchema);

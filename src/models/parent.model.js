@@ -2,7 +2,6 @@ import { Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
-// Inside Parent schema:
 const parentSchema = new Schema({
   name: {
     type: String,
@@ -14,7 +13,7 @@ const parentSchema = new Schema({
     type: String,
     required: true,
     trim: true,
-    unique: true
+    unique: true // Automatically creates a unique index
   },
   phoneNumber: {
     type: String,
@@ -50,7 +49,7 @@ const parentSchema = new Schema({
     ref: 'Admin',
     required: true
   }
-});
+}, { timestamps: true });
 
 parentSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
@@ -89,5 +88,12 @@ parentSchema.methods.generateRefreshToken = function () {
       expiresIn: process.env.REFRESH_TOKEN_EXPIRY
     })
 }
+
+// Adding individual indexes
+parentSchema.index({ instituteId: 1 }); // Index on instituteId
+parentSchema.index({ childrens: 1 }); // Index on childrens
+
+// Adding a compound index for instituteId and childrens
+parentSchema.index({ instituteId: 1, childrens: 1 }); // Optimizes queries for parents by child and institute
 
 export const Parent = model('Parent', parentSchema);

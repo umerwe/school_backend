@@ -12,14 +12,14 @@ const studentSchema = new Schema({
     rollNumber: {
         type: String,
         required: true,
-        unique: true,
+        unique: true, // Automatically creates a unique index
         lowercase: true,
         trim: true
     },
     email: {
         type: String,
         required: true,
-        unique: true,
+        unique: true, // Automatically creates a unique index
         trim: true
     },
     password: {
@@ -43,7 +43,8 @@ const studentSchema = new Schema({
     // Class Information
     studentClass: {
         type: Number,
-        required: true
+        required: true,
+        enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] // Align with classSchema
     },
     section: {
         type: String,
@@ -58,11 +59,10 @@ const studentSchema = new Schema({
     },
     // Guardian Information
     guardian: {
-        type:Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Parent',
         required: true
     },
-
     // Additional Information
     dateOfBirth: {
         type: Date,
@@ -94,6 +94,7 @@ const studentSchema = new Schema({
     instituteId: {
         type: Schema.Types.ObjectId,
         ref: 'Admin',
+        required: true // Align with previous schemas
     }
 }, { timestamps: true });
 
@@ -135,5 +136,19 @@ studentSchema.methods.generateRefreshToken = function () {
             expiresIn: process.env.REFRESH_TOKEN_EXPIRY
         })
 }
+
+// Adding individual indexes
+studentSchema.index({ instituteId: 1 }); // Index on instituteId
+studentSchema.index({ studentClass: 1 }); // Index on studentClass
+studentSchema.index({ section: 1 }); // Index on section
+studentSchema.index({ name: 1 }); // Index on name
+// rollNumber and email already have unique indexes due to unique: true
+
+// Adding a compound index for studentClass, section, and instituteId
+studentSchema.index({ studentClass: 1, section: 1, instituteId: 1 }, { unique: true }); // Ensures unique class-section-institute combination
+
+// Adding a compound index for name and instituteId
+studentSchema.index({ name: 1, instituteId: 1 }); // Optimizes searches by name within an institute
+
 
 export const Student = model('Student', studentSchema)
