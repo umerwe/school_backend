@@ -4,9 +4,24 @@
     {
       "src": "src/index.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "api/stripe.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
+    {
+      "src": "/api/stripe/webhook/stripe",
+      "dest": "api/stripe.js",
+      "methods": ["POST"],
+      "headers": {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST",
+        "Access-Control-Allow-Headers": "Content-Type, Stripe-Signature"
+      }
+    },
     {
       "src": "/(.*)",
       "dest": "src/index.js"

@@ -47,7 +47,7 @@ import marksRoute from './routes/marks.route.js';
 import announcementRoute from './routes/announcement.route.js';
 import geminiRoute from './routes/gemini.route.js';
 import voucherRoute from './routes/voucher.route.js';
-import paymentRoute from './routes/stripe.route.js';
+import paymentRoute from './api/stripe.js';
 import activityLogRoute from './routes/activityLog.route.js';
 import reportsRoute from './routes/reports.route.js';
 
