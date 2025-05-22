@@ -11,8 +11,11 @@ router.route("/create-checkout-session").post(createCheckoutSession);
 router.route("/verify-payment").post(verifyPayment);
 
 // Handle Stripe Webhook
-router.route("/webhook/stripe", express.raw({ type: "application/json" })).post(
-    handleStripeWebhook
+// Remove any other body-parser middleware for this route
+router.post(
+  "/webhook/stripe",
+  express.raw({ type: "application/json" }), // Must be first
+  handleStripeWebhook
 );
 
 export default router;
