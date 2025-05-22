@@ -12,15 +12,9 @@
   ],
   "routes": [
     {
-      "src": "/api/stripe/webhook/stripe",
+      "src": "/api/stripe/webhook",
       "dest": "api/stripe.js",
-      "methods": ["POST"],
-      "headers": {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST",
-        "Access-Control-Allow-Headers": "Content-Type, Stripe-Signature"
-      }
+      "methods": ["POST"]
     },
     {
       "src": "/(.*)",

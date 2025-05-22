@@ -18,7 +18,7 @@ export const createCheckoutSession = asyncHandler(async (req, res) => {
     
         const corsOrigin = process.env.NODE_ENV === "production" ? corsOriginProd : corsOriginLocal;
     
-        if (!corsOrigin || !corsOrigin.match(/^https?:\/\//)) {
+        if (!corsOrigin) {
             throw new ApiError(
                 500,
                 "Server configuration error: CORS_ORIGIN is not set or is invalid"
