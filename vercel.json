@@ -6,14 +6,14 @@
       "use": "@vercel/node"
     },
     {
-      "src": "api/stripe.js",
+      "src": "src/api/stripe.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/stripe/webhook",
-      "dest": "api/stripe.js",
+      "dest": "src/api/stripe.js", 
       "methods": ["POST"]
     },
     {
