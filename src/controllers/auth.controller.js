@@ -627,65 +627,77 @@ export const loginParent = asyncHandler(async (req, res) => {
 
 // Others
 export const logout = asyncHandler(async (req, res) => {
-    const incomingRefreshToken = req.cookies?.refreshToken || req.body.refreshToken;
-
-    if (!incomingRefreshToken) {
-        throw new ApiError(400, "Refresh token missing");
-    }
-
-    // Verify refresh token
-    let decoded;
     try {
-        decoded = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+        const incomingRefreshToken = req.cookies?.refreshToken || req.body.refreshToken;
+
+        if (!incomingRefreshToken) {
+            throw new ApiError(400, "Refresh token missing");
+        }
+
+        // Verify refresh token
+        let decoded;
+        try {
+            decoded = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+        } catch (error) {
+            throw new ApiError(401, "Invalid refresh token");
+        }
+
+        let user;
+
+        // Check the role and find the user accordingly using switch
+        switch (decoded.role) {
+            case 'admin':
+                user = await Admin.findByIdAndUpdate(
+                    decoded._id,
+                    { $unset: { refreshToken: 1 } },
+                    { new: true }
+                );
+                break;
+            case 'student':
+                user = await Student.findByIdAndUpdate(
+                    decoded._id,
+                    { $unset: { refreshToken: 1 } },
+                    { new: true }
+                );
+                break;
+            case 'teacher':
+                user = await Teacher.findByIdAndUpdate(
+                    decoded._id,
+                    { $unset: { refreshToken: 1 } },
+                    { new: true }
+                );
+                break;
+            case 'parent':
+                user = await Parent.findByIdAndUpdate(
+                    decoded._id,
+                    { $unset: { refreshToken: 1 } },
+                    { new: true }
+                );
+                break;
+            default:
+                throw new ApiError(400, 'Invalid role');
+        }
+
+        if (!user) {
+            throw new ApiError(404, "User not found");
+        }
+
+        const cookieOptions = {
+            httpOnly: true,
+            secure: true,       // Required for 'None' to work
+            sameSite: 'None',   // Allow cross-site cookies (required for frontend ↔ backend)
+            path: '/',
+        };
+
+        // Clear cookies
+        res
+            .clearCookie("accessToken", cookieOptions)
+            .clearCookie("refreshToken", cookieOptions)
+            .status(200)
+            .json(new ApiResponse(200, {}, "User logged out successfully"));
     } catch (error) {
-        throw new ApiError(401, "Invalid refresh token");
+        console.log(error)
     }
-
-    let user;
-
-    // Check the role and find the user accordingly using switch
-    switch (decoded.role) {
-        case 'admin':
-            user = await Admin.findByIdAndUpdate(
-                decoded._id,
-                { $unset: { refreshToken: 1 } },
-                { new: true }
-            );
-            break;
-        case 'student':
-            user = await Student.findByIdAndUpdate(
-                decoded._id,
-                { $unset: { refreshToken: 1 } },
-                { new: true }
-            );
-            break;
-        case 'teacher':
-            user = await Teacher.findByIdAndUpdate(
-                decoded._id,
-                { $unset: { refreshToken: 1 } },
-                { new: true }
-            );
-            break;
-        default:
-            throw new ApiError(400, 'Invalid role');
-    }
-
-    if (!user) {
-        throw new ApiError(404, "User not found");
-    }
-
-    const cookieOptions = {
-        httpOnly: true,
-        secure: true,
-        sameSite: "Strict"
-    };
-
-    // Clear cookies
-    res
-        .clearCookie("accessToken", cookieOptions)
-        .clearCookie("refreshToken", cookieOptions)
-        .status(200)
-        .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
 
 export const refreshAuthTokens = asyncHandler(async (req, res) => {
