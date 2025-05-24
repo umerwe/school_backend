@@ -16,7 +16,7 @@ export const createCheckoutSession = asyncHandler(async (req, res) => {
         const corsOriginLocal = process.env.CORS_ORIGIN_LOCAL;
         const corsOriginProd = process.env.CORS_ORIGIN_PROD;
     
-        const corsOrigin = process.env.NODE_ENV === "production" ? corsOriginProd : corsOriginLocal;
+        const corsOrigin = process.env.NODE_ENV === "test" ? corsOriginProd : corsOriginLocal;
     
         if (!corsOrigin) {
             throw new ApiError(
